@@ -94,6 +94,26 @@
   background: #6bcb77;
 }
 
+/* Mini Math preview */
+.math-preview {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 84px;
+}
+
+.math-symbol {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffd93d;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (max-width: 440px) {
   .picker-subtitle {
     font-size: 1.2rem;

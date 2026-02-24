@@ -21,8 +21,8 @@ export interface RoomData {
   player1: PlayerInfo;
   player2: PlayerInfo | null;
   status: "waiting" | "picking" | "playing";
-  currentGame: "xo" | "connect4" | null;
-  gameState: GameState | null;
+  currentGame: "xo" | "connect4" | "math" | null;
+  gameState: GameState | MathGameState | null;
 }
 
 export interface GameState {
@@ -30,6 +30,16 @@ export interface GameState {
   isP1Turn: boolean;
   result: GameResult;
   winData: number[] | [number, number][];
+  score: { player1: number; player2: number };
+}
+
+export interface MathGameState {
+  round: number;
+  phase: "asking" | "pass" | "answering" | "reveal" | "done";
+  asker: "player1" | "player2";
+  question: string;
+  correctAnswer: string;
+  givenAnswer: string;
   score: { player1: number; player2: number };
 }
 
@@ -79,19 +89,19 @@ export function subscribeToRoom(roomId: string, callback: (data: RoomData | null
   });
 }
 
-export async function setCurrentGame(roomId: string, game: "xo" | "connect4", initialState: GameState): Promise<void> {
+export async function setCurrentGame(roomId: string, game: "xo" | "connect4" | "math", initialState: GameState | MathGameState): Promise<void> {
   const roomRef = ref(db, `rooms/${roomId}`);
   await update(roomRef, {
     currentGame: game,
     status: "playing",
-    gameState: serializeState(initialState),
+    gameState: "board" in initialState ? serializeState(initialState as GameState) : initialState,
   });
 }
 
-export async function updateGameState(roomId: string, state: GameState): Promise<void> {
+export async function updateGameState(roomId: string, state: GameState | MathGameState): Promise<void> {
   const stateRef = ref(db, `rooms/${roomId}/gameState`);
   // Firebase strips null from arrays, so replace with "" before writing
-  await set(stateRef, serializeState(state));
+  await set(stateRef, "board" in state ? serializeState(state as GameState) : state);
 }
 
 // Firebase RTDB strips null values from arrays, breaking board structure.

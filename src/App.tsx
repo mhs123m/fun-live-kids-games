@@ -6,9 +6,10 @@ import OnlineSetup from "./OnlineSetup";
 import GamePicker from "./GamePicker";
 import XOGame from "./XOGame";
 import ConnectFour from "./ConnectFour";
+import MathGame from "./MathGame";
 import "./App.css";
 
-type Screen = "mode" | "local-setup" | "online-setup" | "picker" | "xo" | "connect4";
+type Screen = "mode" | "local-setup" | "online-setup" | "picker" | "xo" | "connect4" | "math";
 
 function getRoomIdFromHash(): string | null {
   const hash = window.location.hash;
@@ -97,6 +98,14 @@ function App() {
 
       {screen === "connect4" && players && (
         <ConnectFour
+          players={players}
+          online={online}
+          onBack={handleBackToPicker}
+        />
+      )}
+
+      {screen === "math" && players && (
+        <MathGame
           players={players}
           online={online}
           onBack={handleBackToPicker}

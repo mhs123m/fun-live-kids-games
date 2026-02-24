@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import type { Players, OnlineConfig } from "./types";
 import { setCurrentGame, subscribeToRoom } from "./firebase";
-import type { GameState } from "./firebase";
+import type { GameState, MathGameState } from "./firebase";
 import "./GamePicker.css";
 
-type GameType = "xo" | "connect4";
+type GameType = "xo" | "connect4" | "math";
 
 interface GamePickerProps {
   players: Players;
@@ -29,6 +29,16 @@ const C4_INITIAL_STATE: GameState = {
   score: { player1: 0, player2: 0 },
 };
 
+const MATH_INITIAL_STATE: MathGameState = {
+  round: 1,
+  phase: "asking",
+  asker: "player1",
+  question: "",
+  correctAnswer: "",
+  givenAnswer: "",
+  score: { player1: 0, player2: 0 },
+};
+
 function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) {
   const isGuest = online && online.myRole === "player2";
 
@@ -48,7 +58,7 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
     if (isGuest) return;
 
     if (online) {
-      const initial = game === "xo" ? XO_INITIAL_STATE : C4_INITIAL_STATE;
+      const initial = game === "xo" ? XO_INITIAL_STATE : game === "connect4" ? C4_INITIAL_STATE : MATH_INITIAL_STATE;
       await setCurrentGame(online.roomId, game, initial);
     }
     onSelectGame(game);
@@ -115,6 +125,17 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
               </div>
               <span className="picker-name">Connect Four</span>
               <span className="picker-desc">Drop 4 in a row!</span>
+            </button>
+
+            <button className="picker-card" onClick={() => handlePick("math")}>
+              <div className="picker-preview math-preview">
+                <span className="math-symbol">+</span>
+                <span className="math-symbol">−</span>
+                <span className="math-symbol">×</span>
+                <span className="math-symbol">÷</span>
+              </div>
+              <span className="picker-name">Math Quiz</span>
+              <span className="picker-desc">Ask & answer!</span>
             </button>
           </div>
         </>
