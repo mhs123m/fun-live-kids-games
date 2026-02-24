@@ -3,14 +3,14 @@ import { getDatabase, ref, push, set, get, onValue, update, type Unsubscribe } f
 import type { PlayerInfo, CellValue, GameResult } from "./types";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAtoL9aSA41WDKMMXctncB3FsKfrdgRevA",
-  authDomain: "kids-games-a19f8.firebaseapp.com",
-  databaseURL: "https://kids-games-a19f8-default-rtdb.firebaseio.com",
-  projectId: "kids-games-a19f8",
-  storageBucket: "kids-games-a19f8.firebasestorage.app",
-  messagingSenderId: "401097621013",
-  appId: "1:401097621013:web:71592cab0b0cd9bc86d81c",
-  measurementId: "G-5D8REQ2CCJ",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
