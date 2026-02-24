@@ -19,7 +19,7 @@
 .back-btn {
   position: absolute;
   top: 12px;
-  left: 12px;
+  right: 12px;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -176,7 +176,7 @@
 }
 
 .play-again-btn {
-  font-family: "Baloo 2", cursive, sans-serif;
+  font-family: "Cairo", "Baloo 2", cursive, sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: #764ba2;

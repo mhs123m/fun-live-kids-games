@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import type { Players, OnlineConfig } from "./types";
 import { subscribeToRoom, updateGameState, backToPicking } from "./firebase";
-import type { MathGameState } from "./firebase";
+import type { MathGameState, MathLevel } from "./firebase";
 import "./MathGame.css";
 
 const TOTAL_ROUNDS = 5;
@@ -9,7 +9,8 @@ const TOTAL_ROUNDS = 5;
 function getInitialState(): MathGameState {
   return {
     round: 1,
-    phase: "asking",
+    phase: "level-select",
+    level: "",
     asker: "player1",
     question: "",
     correctAnswer: "",
@@ -57,7 +58,8 @@ interface MathGameProps {
 }
 
 type Op = "+" | "−" | "×" | "÷";
-const OPS: Op[] = ["+", "−", "×", "÷"];
+const PRESCHOOL_OPS: Op[] = ["+", "−"];
+const JUNIORS_OPS: Op[] = ["+", "−", "×", "÷"];
 
 function computeAnswer(a: number, op: Op, b: number): string {
   switch (op) {
@@ -114,6 +116,12 @@ function MathGame({ players, online, onBack }: MathGameProps) {
     },
     [online]
   );
+
+  const availableOps = state.level === "preschool" ? PRESCHOOL_OPS : JUNIORS_OPS;
+
+  const handleSelectLevel = (level: MathLevel) => {
+    writeState({ ...state, level, phase: "asking" });
+  };
 
   const canSubmitQuestion = num1.trim() !== "" && num2.trim() !== "" && op !== null && !isNaN(Number(num1)) && !isNaN(Number(num2));
 
@@ -200,7 +208,7 @@ function MathGame({ players, online, onBack }: MathGameProps) {
 
   return (
     <div className="game-wrapper math-wrapper">
-      <button className="back-btn" onClick={handleBack}>← Back</button>
+      <button className="back-btn" onClick={handleBack}>→ رجوع</button>
 
       {state.phase === "done" && getWinner() !== "draw" && <Confetti />}
 
@@ -236,13 +244,46 @@ function MathGame({ players, online, onBack }: MathGameProps) {
         </div>
       )}
 
+      {/* --- LEVEL SELECT PHASE --- */}
+      {state.phase === "level-select" && (
+        <>
+          {(!online || online.myRole === "player1") ? (
+            <div className="math-phase-card">
+              <h2 className="math-phase-title">اختر مستوى!</h2>
+              <div className="math-level-grid">
+                <button className="math-level-card" onClick={() => handleSelectLevel("preschool")}>
+                  <span className="math-level-emoji">🧒</span>
+                  <span className="math-level-name">روضة</span>
+                  <span className="math-level-ops">+ −</span>
+                </button>
+                <button className="math-level-card" onClick={() => handleSelectLevel("juniors")}>
+                  <span className="math-level-emoji">🧑‍🎓</span>
+                  <span className="math-level-name">ابتدائي</span>
+                  <span className="math-level-ops">+ − × ÷</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="math-phase-card math-waiting">
+              <h2 className="math-phase-title">اختيار المستوى...</h2>
+              <p className="math-phase-hint">{getName("player1")} يختار الصعوبة</p>
+              <div className="waiting-dots">
+                <span className="dot" />
+                <span className="dot" />
+                <span className="dot" />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
       {/* --- ASKING PHASE --- */}
       {state.phase === "asking" && (
         <>
           {(!online || amIAsker) ? (
             <div className="math-phase-card">
-              <h2 className="math-phase-title">{askerName}, ask a question!</h2>
-              <p className="math-phase-hint">Build a question for {answererName}</p>
+              <h2 className="math-phase-title">{askerName}، اطرح سؤال!</h2>
+              <p className="math-phase-hint">اصنع سؤالاً لـ {answererName}</p>
 
               <div className="math-builder">
                 <input
@@ -253,8 +294,8 @@ function MathGame({ players, online, onBack }: MathGameProps) {
                   onChange={(e) => setNum1(e.target.value)}
                   autoFocus
                 />
-                <div className="math-op-buttons">
-                  {OPS.map((o) => (
+                <div className={`math-op-buttons ${availableOps.length === 2 ? "math-op-2" : ""}`}>
+                  {availableOps.map((o) => (
                     <button
                       key={o}
                       className={`math-op-btn ${op === o ? "math-op-active" : ""}`}
@@ -284,13 +325,13 @@ function MathGame({ players, online, onBack }: MathGameProps) {
                 onClick={handleSubmitQuestion}
                 disabled={!canSubmitQuestion}
               >
-                Submit Question
+                إرسال السؤال
               </button>
             </div>
           ) : (
             <div className="math-phase-card math-waiting">
-              <h2 className="math-phase-title">Round {state.round}</h2>
-              <p className="math-phase-hint">{askerName} is writing a question...</p>
+              <h2 className="math-phase-title">الجولة {state.round}</h2>
+              <p className="math-phase-hint">{askerName} يكتب سؤالاً...</p>
               <div className="waiting-dots">
                 <span className="dot" />
                 <span className="dot" />
@@ -304,10 +345,10 @@ function MathGame({ players, online, onBack }: MathGameProps) {
       {/* --- PASS PHASE (local only) --- */}
       {state.phase === "pass" && !online && (
         <div className="math-phase-card math-pass">
-          <h2 className="math-phase-title">Pass the device!</h2>
-          <p className="math-phase-hint">Give the device to <strong>{answererName}</strong></p>
+          <h2 className="math-phase-title">مرر الجهاز!</h2>
+          <p className="math-phase-hint">أعط الجهاز لـ <strong>{answererName}</strong></p>
           <button className="math-submit-btn" onClick={handlePassDevice}>
-            I'm {answererName}, Ready!
+            أنا {answererName}، جاهز!
           </button>
         </div>
       )}
@@ -317,12 +358,12 @@ function MathGame({ players, online, onBack }: MathGameProps) {
         <>
           {(!online || amIAnswerer) ? (
             <div className="math-phase-card">
-              <h2 className="math-phase-title">{answererName}, your turn!</h2>
+              <h2 className="math-phase-title">{answererName}، دورك!</h2>
               <div className="math-question-display">{state.question}</div>
               <input
                 type="number"
                 className="math-input"
-                placeholder="Your answer"
+                placeholder="إجابتك"
                 value={playerAnswer}
                 onChange={(e) => setPlayerAnswer(e.target.value)}
                 autoFocus
@@ -332,13 +373,13 @@ function MathGame({ players, online, onBack }: MathGameProps) {
                 onClick={handleSubmitAnswer}
                 disabled={!playerAnswer.trim()}
               >
-                Submit Answer
+                إرسال الإجابة
               </button>
             </div>
           ) : (
             <div className="math-phase-card math-waiting">
               <h2 className="math-phase-title">{state.question}</h2>
-              <p className="math-phase-hint">{answererName} is thinking...</p>
+              <p className="math-phase-hint">{answererName} يفكر...</p>
               <div className="waiting-dots">
                 <span className="dot" />
                 <span className="dot" />
@@ -357,17 +398,17 @@ function MathGame({ players, online, onBack }: MathGameProps) {
             {state.givenAnswer === state.correctAnswer ? (
               <>
                 <span className="math-reveal-icon">&#10003;</span>
-                <span>Correct! The answer is {state.correctAnswer}</span>
+                <span>صحيح! الإجابة هي {state.correctAnswer}</span>
               </>
             ) : (
               <>
                 <span className="math-reveal-icon">&#10007;</span>
-                <span>{answererName} said {state.givenAnswer} — answer was {state.correctAnswer}</span>
+                <span>{answererName} قال {state.givenAnswer} — الإجابة كانت {state.correctAnswer}</span>
               </>
             )}
           </div>
           <button className="math-submit-btn" onClick={handleNextRound}>
-            {state.round >= TOTAL_ROUNDS ? "See Results" : "Next Round"}
+            {state.round >= TOTAL_ROUNDS ? "عرض النتائج" : "الجولة التالية"}
           </button>
         </div>
       )}
@@ -376,10 +417,10 @@ function MathGame({ players, online, onBack }: MathGameProps) {
       {state.phase === "done" && (
         <div className="result-area">
           {getWinner() === "draw" ? (
-            <div className={`status-bar status-result`}>It's a Draw! 🤝</div>
+            <div className={`status-bar status-result`}>تعادل! 🤝</div>
           ) : (
             <>
-              <div className={`status-bar status-result`}>{getName(getWinner() as "player1" | "player2")} Wins! 🎉</div>
+              <div className={`status-bar status-result`}>{getName(getWinner() as "player1" | "player2")} فاز! 🎉</div>
               {getImage(getWinner() as "player1" | "player2") && (
                 <img
                   src={getImage(getWinner() as "player1" | "player2")}
@@ -393,7 +434,7 @@ function MathGame({ players, online, onBack }: MathGameProps) {
             {getName("player1")}: {state.score.player1} — {getName("player2")}: {state.score.player2}
           </div>
           <button className="play-again-btn" onClick={handlePlayAgain}>
-            Play Again!
+            العب مرة أخرى!
           </button>
         </div>
       )}

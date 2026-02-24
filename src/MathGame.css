@@ -64,6 +64,58 @@
   letter-spacing: 2px;
 }
 
+/* Level select */
+.math-level-grid {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.math-level-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 24px 28px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 160px;
+  font-family: inherit;
+  color: white;
+}
+
+.math-level-card:hover {
+  border-color: #ffd93d;
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 25px rgba(255, 217, 61, 0.3);
+}
+
+.math-level-card:active {
+  transform: scale(0.97);
+}
+
+.math-level-emoji {
+  font-size: 2.4rem;
+}
+
+.math-level-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.math-level-ops {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffd93d;
+  letter-spacing: 4px;
+}
+
 /* Question builder */
 .math-builder {
   display: flex;
@@ -142,6 +194,10 @@
   box-shadow: 0 0 15px rgba(255, 217, 61, 0.4);
 }
 
+.math-op-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 /* Preview equation */
 .math-preview-eq {
   font-size: 1.5rem;
@@ -186,7 +242,7 @@
 
 /* Submit button */
 .math-submit-btn {
-  font-family: "Baloo 2", cursive, sans-serif;
+  font-family: "Cairo", "Baloo 2", cursive, sans-serif;
   font-size: 1.2rem;
   font-weight: 700;
   color: #764ba2;
@@ -319,5 +375,18 @@
 
   .math-builder {
     gap: 8px;
+  }
+
+  .math-level-card {
+    width: 130px;
+    padding: 18px 16px;
+  }
+
+  .math-level-emoji {
+    font-size: 2rem;
+  }
+
+  .math-level-name {
+    font-size: 1rem;
   }
 }

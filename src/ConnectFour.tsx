@@ -220,18 +220,18 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
   }, [online, onBack]);
 
   const getStatusMessage = () => {
-    if (result === "player1") return `${getName("player1")} Wins! 🎉`;
-    if (result === "player2") return `${getName("player2")} Wins! 🎉`;
-    if (result === "draw") return "It's a Draw! 🤝";
-    if (online && !isMyTurn) return `Waiting for ${isP1Turn ? getName("player1") : getName("player2")}...`;
-    return isP1Turn ? `${getName("player1")}'s Turn` : `${getName("player2")}'s Turn`;
+    if (result === "player1") return `${getName("player1")} فاز! 🎉`;
+    if (result === "player2") return `${getName("player2")} فاز! 🎉`;
+    if (result === "draw") return "تعادل! 🤝";
+    if (online && !isMyTurn) return `بانتظار ${isP1Turn ? getName("player1") : getName("player2")}...`;
+    return isP1Turn ? `دور ${getName("player1")}` : `دور ${getName("player2")}`;
   };
 
   const isColumnFull = (col: number) => board[0]?.[col] !== null;
 
   return (
     <div className="game-wrapper c4-wrapper">
-      <button className="back-btn" onClick={handleBack}>← Back</button>
+      <button className="back-btn" onClick={handleBack}>→ رجوع</button>
 
       {result && result !== "draw" && <Confetti />}
 
@@ -314,7 +314,7 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
             />
           )}
           <button className="play-again-btn" onClick={resetGame}>
-            Play Again!
+            العب مرة أخرى!
           </button>
         </div>
       )}

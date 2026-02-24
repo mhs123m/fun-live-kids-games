@@ -28,11 +28,11 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
     if (phase === "join" && roomId) {
       getRoom(roomId).then((data) => {
         if (!data) {
-          setError("Room not found");
+          setError("الغرفة غير موجودة");
           return;
         }
         if (data.player2) {
-          setError("Room is full");
+          setError("الغرفة ممتلئة");
           return;
         }
         setHostData(data);
@@ -73,7 +73,7 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
       window.location.hash = `room=${id}`;
       setPhase("waiting");
     } catch {
-      setError("Failed to create room");
+      setError("فشل إنشاء الغرفة");
     }
     setLoading(false);
   };
@@ -114,9 +114,9 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
   if (phase === "create") {
     return (
       <div className="online-wrapper">
-        <button className="back-btn" onClick={onBack}>← Back</button>
-        <h1 className="online-title">Create Room</h1>
-        <p className="online-subtitle">Set up your profile</p>
+        <button className="back-btn" onClick={onBack}>→ رجوع</button>
+        <h1 className="online-title">إنشاء غرفة</h1>
+        <p className="online-subtitle">جهّز ملفك الشخصي</p>
 
         <div className="online-card">
           <div className="online-avatar-area" onClick={() => fileRef.current?.click()}>
@@ -134,7 +134,7 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
           </div>
           <input
             type="text"
-            placeholder="Your name"
+            placeholder="اسمك"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className="online-name-input"
@@ -149,7 +149,7 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
           onClick={handleCreateRoom}
           disabled={!name.trim() || loading}
         >
-          {loading ? "Creating..." : "Create Room"}
+          {loading ? "جاري الإنشاء..." : "إنشاء غرفة"}
         </button>
       </div>
     );
@@ -159,20 +159,20 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
   if (phase === "waiting") {
     return (
       <div className="online-wrapper">
-        <button className="back-btn" onClick={onBack}>← Back</button>
-        <h1 className="online-title">Waiting for opponent</h1>
+        <button className="back-btn" onClick={onBack}>→ رجوع</button>
+        <h1 className="online-title">بانتظار الخصم</h1>
         <div className="waiting-dots">
           <span className="dot" />
           <span className="dot" />
           <span className="dot" />
         </div>
 
-        <p className="online-subtitle">Share this link with your friend:</p>
+        <p className="online-subtitle">شارك هذا الرابط مع صديقك:</p>
 
         <div className="share-box">
           <span className="share-link">{shareLink}</span>
           <button className="copy-btn" onClick={handleCopy}>
-            {copied ? "Copied!" : "Copy"}
+            {copied ? "تم النسخ!" : "نسخ"}
           </button>
         </div>
       </div>
@@ -182,13 +182,13 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
   // --- Join Room View ---
   return (
     <div className="online-wrapper">
-      <button className="back-btn" onClick={onBack}>← Back</button>
-      <h1 className="online-title">Join Game</h1>
+      <button className="back-btn" onClick={onBack}>→ رجوع</button>
+      <h1 className="online-title">انضمام للعبة</h1>
 
       {hostData ? (
         <>
           <p className="online-subtitle">
-            <strong>{hostData.player1.name}</strong> is waiting for you!
+            <strong>{hostData.player1.name}</strong> بانتظارك!
           </p>
           {hostData.player1.image && (
             <img src={hostData.player1.image} alt={hostData.player1.name} className="host-avatar" />
@@ -210,7 +210,7 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
             </div>
             <input
               type="text"
-              placeholder="Your name"
+              placeholder="اسمك"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="online-name-input"
@@ -220,18 +220,18 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
 
           {error && <p className="online-error">{error}</p>}
 
-          <button
-            className={`online-btn ${!name.trim() || loading ? "disabled" : ""}`}
-            onClick={handleJoinRoom}
-            disabled={!name.trim() || loading}
-          >
-            {loading ? "Joining..." : "Join Game"}
-          </button>
+        <button
+          className={`online-btn ${!name.trim() || loading ? "disabled" : ""}`}
+          onClick={handleJoinRoom}
+          disabled={!name.trim() || loading}
+        >
+          {loading ? "جاري الانضمام..." : "انضمام"}
+        </button>
         </>
       ) : error ? (
         <p className="online-error">{error}</p>
       ) : (
-        <p className="online-subtitle">Loading room...</p>
+        <p className="online-subtitle">جاري تحميل الغرفة...</p>
       )}
     </div>
   );

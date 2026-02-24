@@ -33,9 +33,12 @@ export interface GameState {
   score: { player1: number; player2: number };
 }
 
+export type MathLevel = "preschool" | "juniors";
+
 export interface MathGameState {
   round: number;
-  phase: "asking" | "pass" | "answering" | "reveal" | "done";
+  phase: "level-select" | "asking" | "pass" | "answering" | "reveal" | "done";
+  level: MathLevel | "";
   asker: "player1" | "player2";
   question: string;
   correctAnswer: string;

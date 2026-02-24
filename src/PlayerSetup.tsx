@@ -36,9 +36,9 @@ function PlayerSetup({ onReady, onBack }: PlayerSetupProps) {
 
   return (
     <div className="setup-wrapper">
-      <button className="back-btn" onClick={onBack}>← Back</button>
-      <h1 className="setup-title">Game Arena</h1>
-      <p className="setup-subtitle">Who's playing today?</p>
+      <button className="back-btn" onClick={onBack}>→ رجوع</button>
+      <h1 className="setup-title">ساحة الألعاب</h1>
+      <p className="setup-subtitle">مين يلعب اليوم؟</p>
 
       <div className="setup-players">
         {/* Player 1 */}
@@ -67,7 +67,7 @@ function PlayerSetup({ onReady, onBack }: PlayerSetupProps) {
           </div>
           <input
             type="text"
-            placeholder="Player 1 name"
+            placeholder="اسم اللاعب ١"
             value={name1}
             onChange={(e) => setName1(e.target.value)}
             className="setup-name-input p1-input"
@@ -103,7 +103,7 @@ function PlayerSetup({ onReady, onBack }: PlayerSetupProps) {
           </div>
           <input
             type="text"
-            placeholder="Player 2 name"
+            placeholder="اسم اللاعب ٢"
             value={name2}
             onChange={(e) => setName2(e.target.value)}
             className="setup-name-input p2-input"
@@ -117,7 +117,7 @@ function PlayerSetup({ onReady, onBack }: PlayerSetupProps) {
         onClick={handleStart}
         disabled={!canStart}
       >
-        Let's Play!
+        يلا نلعب!
       </button>
     </div>
   );

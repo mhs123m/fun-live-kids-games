@@ -31,7 +31,8 @@ const C4_INITIAL_STATE: GameState = {
 
 const MATH_INITIAL_STATE: MathGameState = {
   round: 1,
-  phase: "asking",
+  phase: "level-select",
+  level: "",
   asker: "player1",
   question: "",
   correctAnswer: "",
@@ -66,7 +67,7 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
 
   return (
     <div className="picker-wrapper">
-      <button className="back-btn" onClick={onBack}>← Back</button>
+      <button className="back-btn" onClick={onBack}>→ رجوع</button>
 
       <h1 className="game-title">
         <span className="title-p1">{players.player1.name}</span>
@@ -76,7 +77,7 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
 
       {isGuest ? (
         <div className="picker-waiting">
-          <p className="picker-subtitle">Waiting for host to pick a game...</p>
+          <p className="picker-subtitle">بانتظار اختيار المضيف...</p>
           <div className="waiting-dots">
             <span className="dot" />
             <span className="dot" />
@@ -85,7 +86,7 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
         </div>
       ) : (
         <>
-          <p className="picker-subtitle">Choose a game!</p>
+          <p className="picker-subtitle">اختر لعبة!</p>
 
           <div className="picker-grid">
             <button className="picker-card" onClick={() => handlePick("xo")}>
@@ -99,8 +100,8 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
                   />
                 ))}
               </div>
-              <span className="picker-name">Tic Tac Toe</span>
-              <span className="picker-desc">Classic 3x3 grid</span>
+              <span className="picker-name">إكس أو</span>
+              <span className="picker-desc">الشبكة الكلاسيكية</span>
             </button>
 
             <button className="picker-card" onClick={() => handlePick("connect4")}>
@@ -123,8 +124,8 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
                   );
                 })}
               </div>
-              <span className="picker-name">Connect Four</span>
-              <span className="picker-desc">Drop 4 in a row!</span>
+              <span className="picker-name">أربطة أربعة</span>
+              <span className="picker-desc">صنع أربعة متصلة!</span>
             </button>
 
             <button className="picker-card" onClick={() => handlePick("math")}>
@@ -134,8 +135,8 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
                 <span className="math-symbol">×</span>
                 <span className="math-symbol">÷</span>
               </div>
-              <span className="picker-name">Math Quiz</span>
-              <span className="picker-desc">Ask & answer!</span>
+              <span className="picker-name">اختبار رياضيات</span>
+              <span className="picker-desc">اسأل وأجب!</span>
             </button>
           </div>
         </>
