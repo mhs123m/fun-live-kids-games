@@ -44,7 +44,7 @@ function App() {
     setScreen("picker");
   };
 
-  const handleOnlineReady = useCallback((p: Players, roomId: string, myRole: "player1" | "player2") => {
+  const handleOnlineReady = useCallback((p: Players, roomId: string, myRole: "player1" | "player2" | "spectator") => {
     setPlayers(p);
     setOnline({ roomId, myRole });
     setScreen("picker");

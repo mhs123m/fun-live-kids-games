@@ -23,6 +23,12 @@ export interface RoomData {
   status: "waiting" | "picking" | "playing";
   currentGame: "xo" | "connect4" | "math" | null;
   gameState: GameState | MathGameState | null;
+  votes?: {
+    player1?: "xo" | "connect4" | "math" | null;
+    player2?: "xo" | "connect4" | "math" | null;
+  };
+  privacy?: "private" | "public";
+  spectators?: PlayerInfo[];
 }
 
 export interface GameState {
@@ -48,7 +54,7 @@ export interface MathGameState {
 
 // --- Room operations ---
 
-export async function createRoom(player1: PlayerInfo): Promise<string> {
+export async function createRoom(player1: PlayerInfo, privacy: "private" | "public" = "private"): Promise<string> {
   const roomsRef = ref(db, "rooms");
   const newRoomRef = push(roomsRef);
   const roomData: RoomData = {
@@ -57,25 +63,34 @@ export async function createRoom(player1: PlayerInfo): Promise<string> {
     status: "waiting",
     currentGame: null,
     gameState: null,
+    privacy,
+    spectators: [],
   };
   await set(newRoomRef, roomData);
   return newRoomRef.key!;
 }
 
-export async function joinRoom(roomId: string, player2: PlayerInfo): Promise<RoomData | null> {
+export async function joinRoom(roomId: string, player2: PlayerInfo): Promise<{ room: RoomData; role: "player1" | "player2" | "spectator" } | null> {
   const roomRef = ref(db, `rooms/${roomId}`);
   const snapshot = await get(roomRef);
   if (!snapshot.exists()) return null;
 
   const room = snapshot.val() as RoomData;
-  if (room.player2) return null; // already full
+  
+  // If room has 2 players, join as spectator
+  if (room.player2) {
+    const spectators = [...(room.spectators || []), player2];
+    await update(roomRef, { spectators });
+    return { room: { ...room, spectators }, role: "spectator" };
+  }
 
+  // Join as player2
   await update(roomRef, {
     player2,
     status: "picking",
   });
 
-  return { ...room, player2, status: "picking" };
+  return { room: { ...room, player2, status: "picking" }, role: "player2" };
 }
 
 export async function getRoom(roomId: string): Promise<RoomData | null> {
@@ -89,6 +104,13 @@ export function subscribeToRoom(roomId: string, callback: (data: RoomData | null
   const roomRef = ref(db, `rooms/${roomId}`);
   return onValue(roomRef, (snapshot) => {
     callback(snapshot.exists() ? (snapshot.val() as RoomData) : null);
+  });
+}
+
+export async function setVote(roomId: string, player: "player1" | "player2" | "spectator", game: "xo" | "connect4" | "math"): Promise<void> {
+  const roomRef = ref(db, `rooms/${roomId}`);
+  await update(roomRef, {
+    [`votes.${player}`]: game,
   });
 }
 

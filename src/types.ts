@@ -13,5 +13,5 @@ export type GameResult = "player1" | "player2" | "draw" | null;
 
 export interface OnlineConfig {
   roomId: string;
-  myRole: "player1" | "player2";
+  myRole: "player1" | "player2" | "spectator";
 }

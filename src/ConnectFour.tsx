@@ -131,11 +131,12 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
   }, [online]);
 
   const isMyTurn = !online || (isP1Turn && online.myRole === "player1") || (!isP1Turn && online.myRole === "player2");
+  const isSpectator = online && online.myRole === "spectator";
 
   const handleColumnClick = useCallback(
     (col: number) => {
       if (result) return;
-      if (online && !isMyTurn) return;
+      if (isSpectator || (online && !isMyTurn)) return;
 
       const player: CellValue = isP1Turn ? "player1" : "player2";
       const dropResult = dropPiece(board, col, player);
@@ -172,7 +173,7 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
         }
       }
     },
-    [board, isP1Turn, result, online, isMyTurn, score]
+    [board, isP1Turn, result, online, isMyTurn, isSpectator, score]
   );
 
   const resetGame = useCallback(() => {
@@ -232,6 +233,10 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
   return (
     <div className="game-wrapper c4-wrapper">
       <button className="back-btn" onClick={handleBack}>→ رجوع</button>
+
+      {isSpectator && (
+        <div className="spectator-badge">👁️ أنت تشاهد</div>
+      )}
 
       {result && result !== "draw" && <Confetti />}
 
@@ -313,9 +318,11 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
               className="winner-img"
             />
           )}
-          <button className="play-again-btn" onClick={resetGame}>
-            العب مرة أخرى!
-          </button>
+          {!isSpectator && (
+            <button className="play-again-btn" onClick={resetGame}>
+              العب مرة أخرى!
+            </button>
+          )}
         </div>
       )}
     </div>

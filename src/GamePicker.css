@@ -11,6 +11,113 @@
   margin-top: 40px;
 }
 
+.picker-voting {
+  margin-top: 20px;
+}
+
+.picker-spectator {
+  margin-top: 40px;
+}
+
+.picker-spectator-hint {
+  margin-top: 20px;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.picker-host-vote,
+.picker-guest-vote {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 30px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  font-weight: 500;
+}
+
+.host-vote-label,
+.guest-vote-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.host-vote-game,
+.guest-vote-game {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffd93d;
+}
+
+.picker-card.picker-voted {
+  border-color: #6bcb77;
+  background: rgba(107, 203, 119, 0.2);
+  box-shadow: 0 0 20px rgba(107, 203, 119, 0.3);
+}
+
+.picker-card.guest-voted-xo,
+.picker-card.guest-voted-connect4,
+.picker-card.guest-voted-math {
+  position: relative;
+}
+
+.picker-card.guest-voted-xo {
+  border-color: rgba(107, 203, 119, 0.5);
+  background: rgba(107, 203, 119, 0.1);
+}
+
+.picker-card.guest-voted-connect4 {
+  border-color: rgba(107, 203, 119, 0.5);
+  background: rgba(107, 203, 119, 0.1);
+}
+
+.picker-card.guest-voted-math {
+  border-color: rgba(107, 203, 119, 0.5);
+  background: rgba(107, 203, 119, 0.1);
+}
+
+.vote-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #6bcb77;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  animation: popIn 0.3s ease-out;
+}
+
+.guest-vote-indicator {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(107, 203, 119, 0.2);
+  color: #6bcb77;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #6bcb77;
+}
+
+.picker-waiting-host {
+  margin-top: 30px;
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  70% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .picker-subtitle {
   font-size: 1.4rem;
   color: rgba(255, 255, 255, 0.8);

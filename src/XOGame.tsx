@@ -88,11 +88,12 @@ function XOGame({ players, online, onBack }: XOGameProps) {
   }, [online]);
 
   const isMyTurn = !online || (isP1Turn && online.myRole === "player1") || (!isP1Turn && online.myRole === "player2");
+  const isSpectator = online && online.myRole === "spectator";
 
   const handleClick = useCallback(
     (index: number) => {
       if (board[index] || result) return;
-      if (online && !isMyTurn) return;
+      if (isSpectator || (online && !isMyTurn)) return;
 
       const newBoard = [...board];
       newBoard[index] = isP1Turn ? "player1" : "player2";
@@ -186,6 +187,10 @@ function XOGame({ players, online, onBack }: XOGameProps) {
     <div className="game-wrapper">
       <button className="back-btn" onClick={handleBack}>→ رجوع</button>
 
+      {isSpectator && (
+        <div className="spectator-badge">👁️ أنت تشاهد</div>
+      )}
+
       {result && result !== "draw" && <Confetti />}
 
       <h1 className="game-title">
@@ -244,9 +249,11 @@ function XOGame({ players, online, onBack }: XOGameProps) {
               className="winner-img"
             />
           )}
-          <button className="play-again-btn" onClick={resetGame}>
-            العب مرة أخرى!
-          </button>
+          {!isSpectator && (
+            <button className="play-again-btn" onClick={resetGame}>
+              العب مرة أخرى!
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -6,7 +6,7 @@ import "./OnlineSetup.css";
 
 interface OnlineSetupProps {
   initialRoomId: string | null;
-  onReady: (players: Players, roomId: string, myRole: "player1" | "player2") => void;
+  onReady: (players: Players, roomId: string, myRole: "player1" | "player2" | "spectator") => void;
   onBack: () => void;
 }
 
@@ -21,6 +21,7 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [privacy, setPrivacy] = useState<"private" | "public">("private");
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Fetch host data when joining
@@ -29,10 +30,6 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
       getRoom(roomId).then((data) => {
         if (!data) {
           setError("الغرفة غير موجودة");
-          return;
-        }
-        if (data.player2) {
-          setError("الغرفة ممتلئة");
           return;
         }
         setHostData(data);
@@ -68,7 +65,10 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
     setLoading(true);
     setError(null);
     try {
-      const id = await createRoom({ name: name.trim(), image: image || "/default-p1.png" });
+      const id = await createRoom(
+        { name: name.trim(), image: image || "/default-p1.png" },
+        privacy
+      );
       setRoomId(id);
       window.location.hash = `room=${id}`;
       setPhase("waiting");
@@ -83,17 +83,30 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
     setLoading(true);
     setError(null);
     try {
-      const data = await joinRoom(roomId, { name: name.trim(), image: image || "/default-p2.png" });
-      if (!data) {
-        setError("Room not found or already full");
+      const result = await joinRoom(roomId, { name: name.trim(), image: image || "/default-p2.png" });
+      if (!result) {
+        setError("Room not found");
         setLoading(false);
         return;
       }
-      onReady(
-        { player1: data.player1, player2: { name: name.trim(), image: image || "/default-p2.png" } },
-        roomId,
-        "player2"
-      );
+      
+      const { room, role } = result;
+      
+      if (role === "spectator") {
+        // Joining as spectator
+        onReady(
+          { player1: room.player1, player2: room.player2! },
+          roomId,
+          "spectator"
+        );
+      } else {
+        // Joining as player2
+        onReady(
+          { player1: room.player1, player2: { name: name.trim(), image: image || "/default-p2.png" } },
+          roomId,
+          "player2"
+        );
+      }
     } catch {
       setError("Failed to join room");
     }
@@ -140,6 +153,28 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
             className="online-name-input"
             maxLength={12}
           />
+        </div>
+
+        <div className="privacy-selector">
+          <p className="privacy-label">خصوصية الغرفة:</p>
+          <div className="privacy-options">
+            <button
+              className={`privacy-option ${privacy === "private" ? "privacy-selected" : ""}`}
+              onClick={() => setPrivacy("private")}
+            >
+              <span className="privacy-icon">🔒</span>
+              <span className="privacy-name">خاص</span>
+              <span className="privacy-desc">فقط بالرابط</span>
+            </button>
+            <button
+              className={`privacy-option ${privacy === "public" ? "privacy-selected" : ""}`}
+              onClick={() => setPrivacy("public")}
+            >
+              <span className="privacy-icon">🌐</span>
+              <span className="privacy-name">عام</span>
+              <span className="privacy-desc">قابل للعرض</span>
+            </button>
+          </div>
         </div>
 
         {error && <p className="online-error">{error}</p>}

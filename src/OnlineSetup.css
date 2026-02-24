@@ -96,6 +96,66 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* Privacy selector */
+.privacy-selector {
+  margin-bottom: 24px;
+}
+
+.privacy-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.privacy-options {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.privacy-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 16px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  color: white;
+}
+
+.privacy-option:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.03);
+}
+
+.privacy-option.privacy-selected {
+  border-color: #ffd93d;
+  background: rgba(255, 217, 61, 0.2);
+  box-shadow: 0 0 20px rgba(255, 217, 61, 0.3);
+}
+
+.privacy-icon {
+  font-size: 2rem;
+}
+
+.privacy-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.privacy-desc {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
 /* Action button */
 .online-btn {
   font-family: "Cairo", "Baloo 2", cursive, sans-serif;

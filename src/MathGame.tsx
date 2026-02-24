@@ -9,8 +9,8 @@ const TOTAL_ROUNDS = 5;
 function getInitialState(): MathGameState {
   return {
     round: 1,
-    phase: "level-select",
-    level: "",
+    phase: "asking",
+    level: "juniors",
     asker: "player1",
     question: "",
     correctAnswer: "",
@@ -59,7 +59,7 @@ interface MathGameProps {
 
 type Op = "+" | "−" | "×" | "÷";
 const PRESCHOOL_OPS: Op[] = ["+", "−"];
-const JUNIORS_OPS: Op[] = ["+", "−", "×", "÷"];
+const JUNIORS_OPS: Op[] = ["+"];
 
 function computeAnswer(a: number, op: Op, b: number): string {
   switch (op) {
@@ -193,6 +193,7 @@ function MathGame({ players, online, onBack }: MathGameProps) {
   }, [online, onBack]);
 
   // Determine if current player is the asker (online mode)
+  const isSpectator = online && online.myRole === "spectator";
   const amIAsker = !online || online.myRole === state.asker;
   const amIAnswerer = !online || online.myRole === getAnswerer(state.asker);
 
@@ -209,6 +210,10 @@ function MathGame({ players, online, onBack }: MathGameProps) {
   return (
     <div className="game-wrapper math-wrapper">
       <button className="back-btn" onClick={handleBack}>→ رجوع</button>
+
+      {isSpectator && (
+        <div className="spectator-badge">👁️ أنت تشاهد</div>
+      )}
 
       {state.phase === "done" && getWinner() !== "draw" && <Confetti />}
 
@@ -247,7 +252,7 @@ function MathGame({ players, online, onBack }: MathGameProps) {
       {/* --- LEVEL SELECT PHASE --- */}
       {state.phase === "level-select" && (
         <>
-          {(!online || online.myRole === "player1") ? (
+          {(!online || online.myRole === "player1") && !isSpectator ? (
             <div className="math-phase-card">
               <h2 className="math-phase-title">اختر مستوى!</h2>
               <div className="math-level-grid">
@@ -280,7 +285,7 @@ function MathGame({ players, online, onBack }: MathGameProps) {
       {/* --- ASKING PHASE --- */}
       {state.phase === "asking" && (
         <>
-          {(!online || amIAsker) ? (
+          {(!online || amIAsker) && !isSpectator ? (
             <div className="math-phase-card">
               <h2 className="math-phase-title">{askerName}، اطرح سؤال!</h2>
               <p className="math-phase-hint">اصنع سؤالاً لـ {answererName}</p>
@@ -288,6 +293,8 @@ function MathGame({ players, online, onBack }: MathGameProps) {
               <div className="math-builder">
                 <input
                   type="number"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className="math-num-input"
                   placeholder="?"
                   value={num1}
@@ -307,6 +314,8 @@ function MathGame({ players, online, onBack }: MathGameProps) {
                 </div>
                 <input
                   type="number"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className="math-num-input"
                   placeholder="?"
                   value={num2}
@@ -343,7 +352,7 @@ function MathGame({ players, online, onBack }: MathGameProps) {
       )}
 
       {/* --- PASS PHASE (local only) --- */}
-      {state.phase === "pass" && !online && (
+      {state.phase === "pass" && !online && !isSpectator && (
         <div className="math-phase-card math-pass">
           <h2 className="math-phase-title">مرر الجهاز!</h2>
           <p className="math-phase-hint">أعط الجهاز لـ <strong>{answererName}</strong></p>
@@ -356,12 +365,14 @@ function MathGame({ players, online, onBack }: MathGameProps) {
       {/* --- ANSWERING PHASE --- */}
       {state.phase === "answering" && (
         <>
-          {(!online || amIAnswerer) ? (
+          {(!online || amIAnswerer) && !isSpectator ? (
             <div className="math-phase-card">
               <h2 className="math-phase-title">{answererName}، دورك!</h2>
               <div className="math-question-display">{state.question}</div>
               <input
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 className="math-input"
                 placeholder="إجابتك"
                 value={playerAnswer}
@@ -433,9 +444,11 @@ function MathGame({ players, online, onBack }: MathGameProps) {
           <div className="math-final-score">
             {getName("player1")}: {state.score.player1} — {getName("player2")}: {state.score.player2}
           </div>
-          <button className="play-again-btn" onClick={handlePlayAgain}>
-            العب مرة أخرى!
-          </button>
+          {!isSpectator && (
+            <button className="play-again-btn" onClick={handlePlayAgain}>
+              العب مرة أخرى!
+            </button>
+          )}
         </div>
       )}
     </div>
