@@ -29,8 +29,8 @@ function PlayerSetup({ onReady, onBack }: PlayerSetupProps) {
   const handleStart = () => {
     if (!canStart) return;
     onReady({
-      player1: { name: name1.trim(), image: image1 || "/default-p1.svg" },
-      player2: { name: name2.trim(), image: image2 || "/default-p2.svg" },
+      player1: { name: name1.trim(), image: image1 || "/default-p1.png" },
+      player2: { name: name2.trim(), image: image2 || "/default-p2.png" },
     });
   };
 
