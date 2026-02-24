@@ -1,0 +1,111 @@
+.picker-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  padding-top: 60px;
+  text-align: center;
+  position: relative;
+}
+
+.picker-waiting {
+  margin-top: 40px;
+}
+
+.picker-subtitle {
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 40px;
+  font-weight: 600;
+}
+
+.picker-grid {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.picker-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 32px 28px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 220px;
+  font-family: inherit;
+  color: white;
+}
+
+.picker-card:hover {
+  border-color: #ffd93d;
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 30px rgba(255, 217, 61, 0.3);
+}
+
+.picker-card:active {
+  transform: scale(0.97);
+}
+
+.picker-name {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.picker-desc {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+/* Mini XO preview */
+.xo-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 84px;
+}
+
+/* Mini Connect Four preview */
+.c4-preview {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  width: 105px;
+}
+
+.mini-cell {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mini-p1 {
+  background: #ffd93d;
+}
+
+.mini-p2 {
+  background: #6bcb77;
+}
+
+@media (max-width: 440px) {
+  .picker-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 28px;
+  }
+
+  .picker-card {
+    width: 180px;
+    padding: 24px 20px;
+  }
+
+  .picker-name {
+    font-size: 1.2rem;
+  }
+}
