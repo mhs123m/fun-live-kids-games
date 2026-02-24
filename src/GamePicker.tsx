@@ -45,6 +45,7 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
   const isSpectator = online && online.myRole === "spectator";
   const [myVote, setMyVote] = useState<"xo" | "connect4" | "math" | null>(null);
   const [hostVote, setHostVote] = useState<"xo" | "connect4" | "math" | null>(null);
+  const [spectatorCount, setSpectatorCount] = useState(0);
 
   // Subscribe to room for voting updates and game start
   useEffect(() => {
@@ -63,12 +64,15 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
       if (!isSpectator && data.votes) {
         if (online.myRole === "player1") {
           setMyVote(data.votes.player1 || null);
-          setHostVote(data.votes.player1 || null);
+          setHostVote(data.votes.player2 || null);
         } else {
           setMyVote(data.votes.player2 || null);
           setHostVote(data.votes.player1 || null);
         }
       }
+
+      // Update spectator count
+      setSpectatorCount((data.spectators || []).length);
     });
     return unsub;
   }, [online, onSelectGame, isSpectator]);
@@ -97,6 +101,12 @@ function GamePicker({ players, online, onSelectGame, onBack }: GamePickerProps) 
         {" ⚡ "}
         <span className="title-p2">{players.player2.name}</span>
       </h1>
+
+      {online && spectatorCount > 0 && (
+        <div className="spectator-count">
+          👁️ {spectatorCount} {spectatorCount === 1 ? "مشاهد" : "مشاهدون"}
+        </div>
+      )}
 
       {isSpectator ? (
         <div className="picker-spectator">

@@ -26,6 +26,19 @@
   font-weight: 500;
 }
 
+.spectator-count {
+  background: rgba(255, 217, 61, 0.15);
+  border: 2px solid rgba(255, 217, 61, 0.3);
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd93d;
+  margin: 0 auto 20px;
+  text-align: center;
+  max-width: 200px;
+}
+
 .picker-host-vote,
 .picker-guest-vote {
   font-size: 1.1rem;
