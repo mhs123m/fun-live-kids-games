@@ -80,7 +80,7 @@ function XOGame({ players, online, onBack }: XOGameProps) {
       const gs = data.gameState as GameState;
       setBoard(deserializeBoard1D(gs.board));
       setIsP1Turn(gs.isP1Turn);
-      setResult(gs.result === "" ? null : gs.result);
+      setResult((gs.result as string) === "" ? null : gs.result);
       setWinLine((gs.winData || []) as number[]);
       setScore(gs.score || { player1: 0, player2: 0 });
     });

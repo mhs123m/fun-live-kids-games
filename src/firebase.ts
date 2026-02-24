@@ -100,12 +100,12 @@ export async function updateGameState(roomId: string, state: GameState): Promise
 function serializeState(state: GameState): GameState {
   return {
     ...state,
-    board: serializeBoard(state.board),
-    result: state.result ?? ("" as GameResult),
+    board: serializeBoard(state.board) as CellValue[] | CellValue[][],
+    result: (state.result ?? "") as GameResult,
   };
 }
 
-function serializeBoard(board: CellValue[] | CellValue[][]): unknown {
+function serializeBoard(board: CellValue[] | CellValue[][]): (string | CellValue)[] | (string | CellValue)[][] {
   if (Array.isArray(board[0])) {
     // 2D board (Connect Four)
     return (board as CellValue[][]).map((row) => row.map((c) => c ?? ""));
