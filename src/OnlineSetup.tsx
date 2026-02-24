@@ -68,7 +68,7 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
     setLoading(true);
     setError(null);
     try {
-      const id = await createRoom({ name: name.trim(), image: image || "" });
+      const id = await createRoom({ name: name.trim(), image: image || "/default-p1.svg" });
       setRoomId(id);
       window.location.hash = `room=${id}`;
       setPhase("waiting");
@@ -83,14 +83,14 @@ function OnlineSetup({ initialRoomId, onReady, onBack }: OnlineSetupProps) {
     setLoading(true);
     setError(null);
     try {
-      const data = await joinRoom(roomId, { name: name.trim(), image: image || "" });
+      const data = await joinRoom(roomId, { name: name.trim(), image: image || "/default-p2.svg" });
       if (!data) {
         setError("Room not found or already full");
         setLoading(false);
         return;
       }
       onReady(
-        { player1: data.player1, player2: { name: name.trim(), image: image || "" } },
+        { player1: data.player1, player2: { name: name.trim(), image: image || "/default-p2.svg" } },
         roomId,
         "player2"
       );

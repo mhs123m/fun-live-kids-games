@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import type { Players, CellValue, GameResult, OnlineConfig } from "./types";
-import { subscribeToRoom, updateGameState, backToPicking } from "./firebase";
+import { subscribeToRoom, updateGameState, backToPicking, deserializeBoard2D } from "./firebase";
 import type { GameState } from "./firebase";
 import "./ConnectFour.css";
 
@@ -121,11 +121,9 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
     const unsub = subscribeToRoom(online.roomId, (data) => {
       if (!data || !data.gameState) return;
       const gs = data.gameState as GameState;
-      // Firebase stores 2D arrays as objects — normalize back to arrays
-      const remoteBoard = normalizeBoard(gs.board);
-      setBoard(remoteBoard);
+      setBoard(deserializeBoard2D(gs.board, ROWS, COLS));
       setIsP1Turn(gs.isP1Turn);
-      setResult(gs.result);
+      setResult(gs.result === "" ? null : gs.result);
       setWinCells(normalizeWinCells(gs.winData));
       setScore(gs.score || { player1: 0, player2: 0 });
     });
@@ -322,38 +320,6 @@ function ConnectFour({ players, online, onBack }: ConnectFourProps) {
       )}
     </div>
   );
-}
-
-// Firebase stores arrays as objects when they have gaps or nested arrays
-// This normalizes them back to proper 2D arrays
-function normalizeBoard(raw: unknown): C4Board {
-  if (!raw) return createEmptyBoard();
-  if (Array.isArray(raw)) {
-    return raw.map((row) => {
-      if (Array.isArray(row)) return row as CellValue[];
-      if (row && typeof row === "object") {
-        return Object.keys(row)
-          .sort((a, b) => Number(a) - Number(b))
-          .map((k) => (row as Record<string, CellValue>)[k]);
-      }
-      return Array(COLS).fill(null);
-    });
-  }
-  // raw is an object with numeric keys
-  if (typeof raw === "object") {
-    const obj = raw as Record<string, unknown>;
-    return Array.from({ length: ROWS }, (_, i) => {
-      const row = obj[String(i)];
-      if (Array.isArray(row)) return row as CellValue[];
-      if (row && typeof row === "object") {
-        return Object.keys(row)
-          .sort((a, b) => Number(a) - Number(b))
-          .map((k) => (row as Record<string, CellValue>)[k]);
-      }
-      return Array(COLS).fill(null);
-    });
-  }
-  return createEmptyBoard();
 }
 
 function normalizeWinCells(raw: unknown): [number, number][] {

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import type { Players, CellValue, GameResult, OnlineConfig } from "./types";
-import { subscribeToRoom, updateGameState, backToPicking } from "./firebase";
+import { subscribeToRoom, updateGameState, backToPicking, deserializeBoard1D } from "./firebase";
 import type { GameState } from "./firebase";
 import "./XOGame.css";
 
@@ -78,10 +78,9 @@ function XOGame({ players, online, onBack }: XOGameProps) {
     const unsub = subscribeToRoom(online.roomId, (data) => {
       if (!data || !data.gameState) return;
       const gs = data.gameState as GameState;
-      const remoteBoard = (gs.board || Array(9).fill(null)) as CellValue[];
-      setBoard(remoteBoard);
+      setBoard(deserializeBoard1D(gs.board));
       setIsP1Turn(gs.isP1Turn);
-      setResult(gs.result);
+      setResult(gs.result === "" ? null : gs.result);
       setWinLine((gs.winData || []) as number[]);
       setScore(gs.score || { player1: 0, player2: 0 });
     });

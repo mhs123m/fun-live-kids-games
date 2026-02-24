@@ -84,13 +84,78 @@ export async function setCurrentGame(roomId: string, game: "xo" | "connect4", in
   await update(roomRef, {
     currentGame: game,
     status: "playing",
-    gameState: initialState,
+    gameState: serializeState(initialState),
   });
 }
 
 export async function updateGameState(roomId: string, state: GameState): Promise<void> {
   const stateRef = ref(db, `rooms/${roomId}/gameState`);
-  await set(stateRef, state);
+  // Firebase strips null from arrays, so replace with "" before writing
+  await set(stateRef, serializeState(state));
+}
+
+// Firebase RTDB strips null values from arrays, breaking board structure.
+// We use "" as a placeholder for empty cells.
+
+function serializeState(state: GameState): GameState {
+  return {
+    ...state,
+    board: serializeBoard(state.board),
+    result: state.result ?? ("" as GameResult),
+  };
+}
+
+function serializeBoard(board: CellValue[] | CellValue[][]): unknown {
+  if (Array.isArray(board[0])) {
+    // 2D board (Connect Four)
+    return (board as CellValue[][]).map((row) => row.map((c) => c ?? ""));
+  }
+  // 1D board (XO)
+  return (board as CellValue[]).map((c) => c ?? "");
+}
+
+export function deserializeBoard1D(raw: unknown): CellValue[] {
+  if (!raw) return Array(9).fill(null);
+  if (Array.isArray(raw)) {
+    return raw.map((c) => (c === "" || c === null || c === undefined ? null : c)) as CellValue[];
+  }
+  // Firebase may return object with numeric keys
+  if (typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+    return Array.from({ length: 9 }, (_, i) => {
+      const v = obj[String(i)];
+      return v === "" || v === null || v === undefined ? null : v;
+    }) as CellValue[];
+  }
+  return Array(9).fill(null);
+}
+
+export function deserializeBoard2D(raw: unknown, rows: number, cols: number): CellValue[][] {
+  const empty = () => Array.from({ length: rows }, () => Array(cols).fill(null));
+  if (!raw) return empty();
+
+  const normalize = (row: unknown): CellValue[] => {
+    if (Array.isArray(row)) {
+      return row.map((c) => (c === "" || c === null || c === undefined ? null : c)) as CellValue[];
+    }
+    if (row && typeof row === "object") {
+      return Array.from({ length: cols }, (_, i) => {
+        const v = (row as Record<string, unknown>)[String(i)];
+        return v === "" || v === null || v === undefined ? null : v;
+      }) as CellValue[];
+    }
+    return Array(cols).fill(null);
+  };
+
+  if (Array.isArray(raw)) {
+    return raw.map(normalize);
+  }
+  if (typeof raw === "object") {
+    return Array.from({ length: rows }, (_, i) =>
+      normalize((raw as Record<string, unknown>)[String(i)])
+    );
+  }
+  return empty();
 }
 
 export async function backToPicking(roomId: string): Promise<void> {
